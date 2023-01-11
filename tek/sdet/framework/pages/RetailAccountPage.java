@@ -6,11 +6,13 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
+
+
 import tek.sdet.framework.base.BaseSetup;
 
 public class RetailAccountPage extends BaseSetup {
 
-	public RetailAccountPage() {
+    public RetailAccountPage() {
 		PageFactory.initElements(getDriver(), this);
 	}
 	
@@ -188,5 +190,9 @@ public WebElement countryDropDown;
 
 @FindBy(xpath="//select[@name='state']")
 public WebElement stateInput;
+
+
+@FindBy(xpath ="//div[text()='Address Updated Successfully']")
+public WebElement addressUpdatedSuccessfullyMessage;
 
 }

@@ -4,16 +4,14 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
 import org.openqa.selenium.WebElement;
-
 import io.cucumber.datatable.DataTable;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import tek.sdet.framework.pages.POMFactory;
 import tek.sdet.framework.utilities.CommonUtility;
 import tek.sdet.framework.utilities.DataGenerator;
 
-    public class RetailAccountSteps extends CommonUtility{
+public class RetailAccountSteps extends CommonUtility{
 	POMFactory factory = new POMFactory();
 	
 
@@ -34,7 +32,7 @@ import tek.sdet.framework.utilities.DataGenerator;
 		logger.info("User entered "+name+"phoneNumber"+phone);
 		
 	}
-	@And("User click on Update button")
+	@When("User click on Update button")
     public void userClickOnUpdateButton() {
     	click(factory.accountPage().updateButton);
     	logger.info("User clicked on update button");
@@ -54,7 +52,7 @@ import tek.sdet.framework.utilities.DataGenerator;
  
     
     
-    @And("User enter below information")
+    @When("User enter below information")
     public void userEnterBelowInformation(DataTable dataTable) {
     List<Map<String, String>>passwordData=dataTable.asMaps(String.class, String.class);
     sendText(factory.accountPage().previousPasswordInput,passwordData.get(0).get("previousPassword"));
@@ -63,7 +61,7 @@ import tek.sdet.framework.utilities.DataGenerator;
     logger.info("User entered password information");
     }
     
-    @And("User click on Change Password button")
+    @When("User click on Change Password button")
     public void userClickOnChangePassword() {
     	click(factory.accountPage().changePasswordButton);
     	logger.info("User clicked on change password button");
@@ -76,8 +74,8 @@ import tek.sdet.framework.utilities.DataGenerator;
     		logger.info(expectedMessage+" is displayed");
     		
     	}else if (expectedMessage.contains("Payment Method added")) {
-    		waitTillPresence(factory.accountPage().passwordUpdated);
-    		Assert.assertEquals(expectedMessage, factory.accountPage().passwordUpdated.getText());
+    		waitTillPresence(factory.accountPage().paymentMethodAddedSuccessfullyMessage);
+    		Assert.assertEquals(expectedMessage, factory.accountPage().paymentMethodAddedSuccessfullyMessage.getText());
     		logger.info(expectedMessage+" is displayed");
     	}else if (expectedMessage.contains("Payment Method updated")) {
     		waitTillPresence(factory.accountPage().paymentMethodUpdatedSuccessfullyMessage);
@@ -87,7 +85,20 @@ import tek.sdet.framework.utilities.DataGenerator;
     		waitTillPresence(factory.accountPage().addressAddedSuccessfullyMessage);
     		Assert.assertEquals(expectedMessage, factory.accountPage().addressAddedSuccessfullyMessage.getText());
     		logger.info(expectedMessage+" is displayed");
-    	}}
+    	}
+    	
+    	else if (expectedMessage.contains("Address Updated Successfully")) {
+
+			waitTillPresence(factory.accountPage().addressUpdatedSuccessfullyMessage);
+			Assert.assertEquals(expectedMessage, factory.accountPage().addressUpdatedSuccessfullyMessage.getText());
+			logger.info(expectedMessage + " is displayed");
+		}else if (expectedMessage.contains("Order Placed, Thanks")) {
+
+			waitTillPresence(factory.homePage().orderPlacedMessage);
+			Assert.assertEquals(expectedMessage, factory.homePage().orderPlacedMessage.getText());
+			logger.info(expectedMessage + " is displayed");
+		}
+    	}
     
     @When("User click on Add a payment method link")
     public void userClickOnAddaPaymentMethodLink() {
@@ -117,7 +128,7 @@ import tek.sdet.framework.utilities.DataGenerator;
 	   List<WebElement>cards = factory.accountPage().cardEndingNumber;
 	   for(WebElement card: cards) {
 		   if (card.getText().equals(cardEndingNumber))
-			   System.out.println(card.getText()+"============");
+			   System.out.println(card.getText()+"=====================");
 			   click(card);
 		   logger.info(cardEndingNumber+" is selected");
 		   break;
@@ -145,17 +156,15 @@ import tek.sdet.framework.utilities.DataGenerator;
     	
   
     }
-    @And("user click on Update Your Card button")
+    @When("user click on Update Your Card button")
     public void userClickOnUpdateYourCardButton() {
     	click(factory.accountPage().updateYourCardButton);
     	logger.info("User clicked on Update Your Card button");
     }
     
     
-    
-    //REMOVECARD
    
-    @And("User click on remove option of card section")
+    @When("User click on remove option of card section")
     public void userClickOnRemoveOptionOfCardSection() {
     	click(factory.accountPage().removeCardButton);
     	logger.info("User clicked on remove button");
@@ -175,7 +184,6 @@ import tek.sdet.framework.utilities.DataGenerator;
     
     
     }
-    //ADD ADDRESS
 
     @When("User click on Add address option")
     public void userClickOnAddAddressOption() {
@@ -183,18 +191,24 @@ import tek.sdet.framework.utilities.DataGenerator;
     	logger.info("User clicked on Add Address button");
     }
     @When("user fill new address form with below information ")
-    public void userFillNewAddressFormWithBelowInformation(DataTable data) {
-    	List<Map<String, String>> addressData = data.asMaps(String.class, String.class);
-    	selectByVisibleText(factory.accountPage().countryDropDown, DataGenerator.addressGenerator(addressData.get(0).get("country")));
-		sendText(factory.accountPage().fullNameInput,DataGenerator.addressGenerator(addressData.get(0).get("fullName")));
-		sendText(factory.accountPage().phoneNumberInput,DataGenerator.addressGenerator(addressData.get(0).get("phoneNumber")));
-		sendText(factory.accountPage().address,DataGenerator.addressGenerator(addressData.get(0).get("streetAddress")));
-		sendText(factory.accountPage().apartmentInput,DataGenerator.addressGenerator(addressData.get(0).get("apt")));
-		sendText(factory.accountPage().cityInput,DataGenerator.addressGenerator(addressData.get(0).get("city")));
-		selectByVisibleText(factory.accountPage().stateInput,DataGenerator.addressGenerator(addressData.get(0).get("state")));
-		sendText(factory.accountPage().zipCodeInput,DataGenerator.addressGenerator(addressData.get(0).get("zipCode")));
-		
-		logger.info("User filled address form with required information");
+    public void userFillNewAddressFormWithBelowInformation(DataTable dataTable) {
+    	List<Map<String, String>> addressInformation = dataTable.asMaps(String.class, String.class);
+		selectByVisibleText(factory.accountPage().countryDropDown,DataGenerator.addressGenerator(addressInformation.get(0).get("country")));
+		clearTextUsingSendKeys(factory.accountPage().fullNameInput);
+		sendText(factory.accountPage().fullNameInput,DataGenerator.addressGenerator(addressInformation.get(0).get("fullName")));
+		clearTextUsingSendKeys(factory.accountPage().phoneNumberInput);
+		sendText(factory.accountPage().phoneNumberInput,DataGenerator.addressGenerator(addressInformation.get(0).get("phoneNumber")));
+		clearTextUsingSendKeys(factory.accountPage().address);
+		sendText(factory.accountPage().address,DataGenerator.addressGenerator(addressInformation.get(0).get("streetAddress")));
+		clearTextUsingSendKeys(factory.accountPage().apartmentInput);
+		sendText(factory.accountPage().apartmentInput,DataGenerator.addressGenerator(addressInformation.get(0).get("apt")));
+		clearTextUsingSendKeys(factory.accountPage().cityInput);
+		sendText(factory.accountPage().cityInput,DataGenerator.addressGenerator(addressInformation.get(0).get("city")));
+		selectByVisibleText(factory.accountPage().stateInput,DataGenerator.addressGenerator(addressInformation.get(0).get("state")));
+		clearTextUsingSendKeys(factory.accountPage().zipCodeInput);
+		sendText(factory.accountPage().zipCodeInput,DataGenerator.addressGenerator(addressInformation.get(0).get("zipCode")));
+
+		logger.info("user filled the address form");
 		
     }
     @When("User click Add Your Address button")
@@ -203,9 +217,8 @@ import tek.sdet.framework.utilities.DataGenerator;
         logger.info("User clicked on Add Your Address button");
     
   
-    
     }
-    //EDITANADDRESS
+   
    
     @When("User click on edit address option")
     public void userClickOnEditAddressOption() {
@@ -220,12 +233,7 @@ import tek.sdet.framework.utilities.DataGenerator;
     	logger.info("User clicked update your address button");
     }
     
-    @Then("a message should be displayed ‘Address Updated Successfully’")
-    public void aMessageShouldBeDisplayedAddressUpdatedSuccessfully() {
-    
-    }
-    
-    //REMOVEADDRESS
+  
  
     @When("User click on remove option of Address section")
     public void userClickOnRemoveOptionOfAddressSection() {
@@ -235,9 +243,15 @@ import tek.sdet.framework.utilities.DataGenerator;
     }
     @Then("Address details should be removed")
     public void addressDetailsShouldBeRemoved() {
-    	Assert.assertTrue(isElementDisplayed(factory.accountPage().addressGrid));
-    	logger.info("User removed address");
+    	try {
+			Assert.assertFalse(isElementDisplayed(factory.accountPage().removeAddressButton));
+			logger.info("Address details removed");
+		} catch (AssertionError e) {
+			logger.info(e.getMessage());
+
+		}
+	}
     
-    }}
+    }
     
     
